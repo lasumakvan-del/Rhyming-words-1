@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Family Flashcard with Gujarati Meanings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2575fc;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #6a11cb;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .family-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .family-btn {
+            background: #5B86E5;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .family-btn:hover {
+            background: #2575fc;
+            transform: scale(1.05);
+        }
+
+        .family-btn.active {
+            background: #6a11cb;
+            font-weight: bold;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #36D1DC, #5B86E5);
+            border-radius: 20px;
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .spiral-holes {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 25px,
+                rgba(255, 255, 255, 0.9) 25px,
+                rgba(255, 255, 255, 0.9) 35px
+            );
+            border-radius: 20px 20px 0 0;
+            z-index: 2;
+        }
+
+        .card-header {
+            background: white;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            margin-bottom: 15px;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .header-icon-container {
+            position: relative;
+            width: 60px;
+            height: 50px;
+            perspective: 300px;
+        }
+
+        .header-icon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #FF9F7C;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            transition: transform 0.6s;
+            backface-visibility: hidden;
+        }
+
+        .header-icon.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .pronounce-btn {
+            background: #5B86E5;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .pronounce-btn:hover {
+            background: #2575fc;
+            transform: scale(1.1);
+        }
+
+        .card-main {
+            background: white;
+            height: 220px;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .main-word {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .main-letter-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-right: 8px;
+            perspective: 600px;
+        }
+
+        .main-letter {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            font-weight: bold;
+            color: #d32f2f;
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-radius: 15px;
+            transition: transform 0.6s;
+            backface-visibility: hidden;
+        }
+
+        .main-letter.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .main-ending {
+            font-size: 72px;
+            font-weight: bold;
+            color: #36D1DC;
+        }
+
+        .word-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .word-image {
+            font-size: 50px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gujarati-meaning {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a11cb;
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 15px;
+            min-width: 120px;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #36D1DC;
+            font-weight: bold;
+        }
+
+        .page-flip-sound {
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: white;
+            pointer-events: none;
+            animation: flipSound 0.6s ease-out;
+        }
+
+        @keyframes flipSound {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-btn {
+            background: #5B86E5;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #2575fc;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #5B86E5;
+        }
+
+        .school-footer {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #6a11cb;
+            font-size: 1.1rem;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .flashcard {
+                height: 330px;
+            }
+            
+            .main-letter, .main-ending {
+                font-size: 60px;
+            }
+            
+            .family-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            
+            .word-image {
+                font-size: 40px;
+                width: 60px;
+                height: 60px;
+            }
+            
+            .gujarati-meaning {
+                font-size: 20px;
+            }
+            
+            .school-footer {
+                font-size: 1rem;
+            }
+        }
+
+        .github-note {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Word Family Flashcard</h1>
+            <p class="subtitle">Learn words with Gujarati meanings</p>
+        </header>
+        
+        <div class="family-selector">
+            <button class="family-btn active" data-family="at">-at Family</button>
+            <button class="family-btn" data-family="ap">-ap Family</button>
+            <button class="family-btn" data-family="ab">-ab Family</button>
+            <button class="family-btn" data-family="ad">-ad Family</button>
+            <button class="family-btn" data-family="ag">-ag Family</button>
+            <button class="family-btn" data-family="am">-am Family</button>
+            <button class="family-btn" data-family="an">-an Family</button>
+            <button class="family-btn" data-family="all">-all Family</button>
+            <button class="family-btn" data-family="ar">-ar Family</button>
+            <button class="family-btn" data-family="ay">-ay Family</button>
+        </div>
+        
+        <div class="flashcard" id="flashcard">
+            <div class="spiral-holes"></div>
+            <div class="card-header">
+                <div class="header-icon-container">
+                    <div class="header-icon" id="header-icon-current">🐀</div>
+                    <div class="header-icon flipped" id="header-icon-next">🐈</div>
+                </div>
+                <button class="pronounce-btn" onclick="speakWord(event)">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+            <div class="card-main">
+                <div class="main-word">
+                    <div class="main-letter-container">
+                        <div class="main-letter" id="main-current">R</div>
+                        <div class="main-letter flipped" id="main-next">C</div>
+                    </div>
+                    <div class="main-ending" id="word-ending">at</div>
+                </div>
+                <div class="word-info">
+                    <div class="word-image" id="word-image">🐀</div>
+                    <div class="gujarati-meaning" id="gujarati-meaning">ઉંદર</div>
+                </div>
+            </div>
+            <div class="click-hint">Click to flip</div>
+            <div class="page-flip-sound" id="flip-indicator">📖</div>
+        </div>
+        
+        <div class="controls">
+            <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="nav-btn" id="next-btn" onclick="navigate(1)">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="progress">
+            <span id="current-index">1</span>/<span id="total-words">8</span> words
+        </div>
+        
+        <div class="school-footer">
+            Makvana sanjaysir. piparadi-2 primary school
+        </div>
+        
+        <footer>
+            <p>Word Family Flashcard App with Gujarati Meanings &copy; 2023</p>
+        </footer>
+    </div>
+
+    <div class="github-note">
+        <h3>GitHub Usage Notes:</h3>
+        <p>If this doesn't work on GitHub Pages, make sure to:</p>
+        <ol>
+            <li>Name your HTML file <code>index.html</code></li>
+            <li>Enable GitHub Pages in your repository settings</li>
+            <li>Check that all file references use relative paths</li>
+        </ol>
+    </div>
+
+    <script>
+        // Word data organized by word families with CORRECTED Gujarati meanings
+        const wordFamilies = {
+            'at': [
+                { letter: 'R', icon: '🐀', word: 'Rat', meaning: 'ઉંદર' }, 
+                { letter: 'C', icon: '🐈', word: 'Cat', meaning: 'બિલાડી' },  
+                { letter: 'B', icon: '🦇', word: 'Bat', meaning: 'ચામાચીડિયું' }, 
+                { letter: 'H', icon: '👒', word: 'Hat', meaning: 'ટોપી' }, 
+                { letter: 'M', icon: '🛏️', word: 'Mat', meaning: 'ચાપડો' }, 
+                { letter: 'P', icon: '✋', word: 'Pat', meaning: 'થપથપાવવું' }, 
+                { letter: 'S', icon: '🧘', word: 'Sat', meaning: 'બેઠા' }, 
+                { letter: 'F', icon: '🍔', word: 'Fat', meaning: 'ચરબી' }
+            ],
+            'ap': [
+                { letter: 'C', icon: '🧢', word: 'Cap', meaning: 'ટોપી' },
+                { letter: 'M', icon: '🗺️', word: 'Map', meaning: 'નકશો' },
+                { letter: 'T', icon: '🚰', word: 'Tap', meaning: 'નળ' },
+                { letter: 'G', icon: '↔️', word: 'Gap', meaning: 'અંતર' },
+                { letter: 'N', icon: '😴', word: 'Nap', meaning: 'ઝોડું' }
+            ],
+            'ab': [
+                { letter: 'C', icon: '🚖', word: 'Cab', meaning: 'ટેક્સી' },
+                { letter: 'F', icon: '🌟', word: 'Fab', meaning: 'ઉત્તમ' },
+                { letter: 'T', icon: '📑', word: 'Tab', meaning: 'ટેબ' },
+                { letter: 'L', icon: '🧪', word: 'Lab', meaning: 'લેબ' },
+                { letter: 'D', icon: '🤏', word: 'Dab', meaning: 'થોડું' },
+                { letter: 'N', icon: '✋', word: 'Nab', meaning: 'પકડવું' }
+            ],
+            'ad': [
+                { letter: 'D', icon: '👨', word: 'Dad', meaning: 'પપ્પા' },
+                { letter: 'L', icon: '👦', word: 'Lad', meaning: 'છોકરો' },
+                { letter: 'S', icon: '😢', word: 'Sad', meaning: 'ઉદાસ' },
+                { letter: 'H', icon: '⏳', word: 'Had', meaning: 'હતું' },
+                { letter: 'M', icon: '😡', word: 'Mad', meaning: 'પાગલ' },
+                { letter: 'B', icon: '👎', word: 'Bad', meaning: 'ખરાબ' },
+                { letter: 'P', icon: '📝', word: 'Pad', meaning: 'પેડ' },
+                { letter: 'C', icon: '😠', word: 'Cad', meaning: 'ખોટો માણસ' }
+            ],
+            'ag': [
+                { letter: 'B', icon: '🎒', word: 'Bag', meaning: 'બેગ' },
+                { letter: 'L', icon: '⏱️', word: 'Lag', meaning: 'પાછળ' },
+                { letter: 'T', icon: '🏷️', word: 'Tag', meaning: 'ટૅગ' },
+                { letter: 'R', icon: '🧽', word: 'Rag', meaning: 'ચિથરો' },
+                { letter: 'G', icon: '😂', word: 'Gag', meaning: 'મજાક' },
+                { letter: 'S', icon: '↘️', word: 'Sag', meaning: 'ઢીલું' },
+                { letter: 'W', icon: '🐕', word: 'Wag', meaning: 'હલાવો' }
+            ],
+            'am': [
+                { letter: 'J', icon: '🍓', word: 'Jam', meaning: 'જામ' },
+                { letter: 'C', icon: '📷', word: 'Cam', meaning: 'કેમેરો' },
+                { letter: 'D', icon: '🏞️', word: 'Dam', meaning: 'ડેમ' },
+                { letter: 'R', icon: '🐏', word: 'Ram', meaning: 'માંઢો' },
+                { letter: 'Y', icon: '🍠', word: 'Yam', meaning: 'રતાળુ' }
+            ],
+            'an': [
+                { letter: 'M', icon: '👨', word: 'Man', meaning: 'માણસ' },
+                { letter: 'C', icon: '🥫', word: 'Can', meaning: 'કરી શકે' },
+                { letter: 'R', icon: '🏃', word: 'Ran', meaning: 'દોડ્યો' },
+                { letter: 'F', icon: '🌀', word: 'Fan', meaning: 'ચાહક' },
+                { letter: 'V', icon: '🚐', word: 'Van', meaning: 'વેન' },
+                { letter: 'P', icon: '🍳', word: 'Pan', meaning: 'પણ' },
+                { letter: 'T', icon: '☀️', word: 'Tan', meaning: 'છાયો' },
+                { letter: 'B', icon: '🚫', word: 'Ban', meaning: 'પ્રતિબંધ' }
+            ],
+            'all': [
+                { letter: 'M', icon: '🏬', word: 'Mall', meaning: 'મોલ' },
+                { letter: 'C', icon: '📞', word: 'Call', meaning: 'ફોન કરવો' },
+                { letter: 'H', icon: '🏠', word: 'Hall', meaning: 'રૂમ' },
+                { letter: 'W', icon: '🧱', word: 'Wall', meaning: 'દિવાલ' },
+                { letter: 'B', icon: '⚽', word: 'Ball', meaning: 'દડો' },
+                { letter: 'T', icon: '📏', word: 'Tall', meaning: 'ઊંચા' },
+                { letter: 'F', icon: '🍂', word: 'Fall', meaning: 'પડવું' }
+            ],
+            'ar': [
+                { letter: 'C', icon: '🚗', word: 'Car', meaning: 'કાર' },
+                { letter: 'F', icon: '↔️', word: 'Far', meaning: 'દૂર' },
+                { letter: 'J', icon: '🏺', word: 'Jar', meaning: 'જાર' },
+                { letter: 'T', icon: '🛣️', word: 'Tar', meaning: 'ડામર' }
+            ],
+            'ay': [
+                { letter: 'P', icon: '💰', word: 'Pay', meaning: 'ચૂકવણી' },
+                { letter: 'D', icon: '☀️', word: 'Day', meaning: 'દિવસ' },
+                { letter: 'M', icon: '📅', word: 'May', meaning: 'મે' },
+                { letter: 'S', icon: '🗣️', word: 'Say', meaning: 'કહે' },
+                { letter: 'L', icon: '📦', word: 'Lay', meaning: 'મૂકવું' },
+                { letter: 'H', icon: '🌾', word: 'Hay', meaning: 'ઘાસ' },
+                { letter: 'W', icon: '🛣️', word: 'Way', meaning: 'માર્ગ' },
+                { letter: 'R', icon: '🌞', word: 'Ray', meaning: 'કિરણ' }
+            ]
+        };
+        
+        let currentFamily = 'at';
+        let currentIndex = 0;
+        let isFlipping = false;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners for family buttons
+            const familyButtons = document.querySelectorAll('.family-btn');
+            familyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const family = this.getAttribute('data-family');
+                    setFamily(family);
+                    
+                    // Update active state
+                    familyButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Set up event listener for flashcard click
+            document.getElementById('flashcard').addEventListener('click', flipLetter);
+            
+            // Initialize the first card
+            updateCard();
+        });
+
+        function flipLetter() {
+            if (isFlipping) return;
+            
+            isFlipping = true;
+            
+            // Show flip indicator
+            const flipIndicator = document.getElementById('flip-indicator');
+            flipIndicator.style.animation = 'none';
+            setTimeout(() => {
+                flipIndicator.style.animation = 'flipSound 0.6s ease-out';
+            }, 10);
+            
+            // Get all elements
+            const headerIconCurrent = document.getElementById('header-icon-current');
+            const headerIconNext = document.getElementById('header-icon-next');
+            const mainCurrent = document.getElementById('main-current');
+            const mainNext = document.getElementById('main-next');
+            
+            // Start flip animation
+            headerIconCurrent.classList.add('flipped');
+            headerIconNext.classList.remove('flipped');
+            mainCurrent.classList.add('flipped');
+            mainNext.classList.remove('flipped');
+            
+            // Update to next word after animation
+            setTimeout(() => {
+                const familyWords = wordFamilies[currentFamily];
+                currentIndex = (currentIndex + 1) % familyWords.length;
+                updateCard(false);
+                
+                // Reset animation classes
+                headerIconCurrent.classList.remove('flipped');
+                headerIconNext.classList.add('flipped');
+                mainCurrent.classList.remove('flipped');
+                mainNext.classList.add('flipped');
+                
+                isFlipping = false;
+            }, 600);
+        }
+
+        function navigate(direction) {
+            const familyWords = wordFamilies[currentFamily];
+            let newIndex = currentIndex + direction;
+            
+            // Handle wrap-around
+            if (newIndex < 0) {
+                newIndex = familyWords.length - 1;
+            } else if (newIndex >= familyWords.length) {
+                newIndex = 0;
+            }
+            
+            currentIndex = newIndex;
+            updateCard();
+        }
+
+        function setFamily(family) {
+            currentFamily = family;
+            currentIndex = 0;
+            updateCard();
+        }
+
+        function updateCard(resetFlipState = true) {
+            const familyWords = wordFamilies[currentFamily];
+            const currentWord = familyWords[currentIndex];
+            const nextIndex = (currentIndex + 1) % familyWords.length;
+            const nextWord = familyWords[nextIndex];
+            
+            // Update word ending
+            document.getElementById('word-ending').textContent = currentFamily;
+            
+            // Update current and next letter
+            document.getElementById('main-current').textContent = currentWord.letter;
+            document.getElementById('main-next').textContent = nextWord.letter;
+            
+            // Update current and next icon
+            document.getElementById('header-icon-current').textContent = currentWord.icon;
+            document.getElementById('header-icon-next').textContent = nextWord.icon;
+            
+            // Update word image and meaning
+            document.getElementById('word-image').textContent = currentWord.icon;
+            document.getElementById('gujarati-meaning').textContent = currentWord.meaning;
+            
+            // Update progress indicator
+            document.getElementById('current-index').textContent = currentIndex + 1;
+            document.getElementById('total-words').textContent = familyWords.length;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = familyWords.length <= 1;
+            document.getElementById('next-btn').disabled = familyWords.length <= 1;
+            
+            // Reset flip state if needed
+            if (resetFlipState) {
+                const headerIconCurrent = document.getElementById('header-icon-current');
+                const headerIconNext = document.getElementById('header-icon-next');
+                const mainCurrent = document.getElementById('main-current');
+                const mainNext = document.getElementById('main-next');
+                
+                headerIconCurrent.classList.remove('flipped');
+                headerIconNext.classList.add('flipped');
+                mainCurrent.classList.remove('flipped');
+                mainNext.classList.add('flipped');
+            }
+        }
+
+        function speakWord(event) {
+            event.stopPropagation(); // Prevent triggering the card flip
+            
+            const familyWords = wordFamilies[currentFamily];
+            const currentWord = familyWords[currentIndex];
+            
+            // Use the browser's speech synthesis
+            try {
+                const speech = new SpeechSynthesisUtterance(currentWord.word);
+                speech.lang = 'en-US';
+                window.speechSynthesis.speak(speech);
+            } catch (error) {
+                console.error("Speech synthesis error:", error);
+                alert("Speech synthesis is not supported in this environment. Try using Chrome or Edge browser.");
+            }
+        }
+    </script>
+</body>
+</html>
